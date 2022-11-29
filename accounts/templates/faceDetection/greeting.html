@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block sidebar %}
+    <div style="background-color: #eff3f6"></div>
+{% endblock %}
+
+{% block content %}
+
+        <div class="content account">
+            <div class="login-form">
+            <h1>Welcome, {{ user.username}}!</h1>
+                <h5>Успешно распознан</h5>
+                {% if form.errors %}
+                    <p>Что то пошло не так.</p>
+                {% endif %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" name="next" value="{% url 'group_student_list' %}" />
+                    <button><a href="{% url 'group_student_list' %}">Next</a>
+                </button>
+
+                </form>
+
+            </div>
+        </div>
+
+{% endblock %}

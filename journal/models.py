@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 
-from django_journal.settings import SCORE_CHOICES, STUDENT, TEACHER
+from django_journal.settings import SCORE_CHOICES, STUDENT, TEACHER, ATTEND_CHOICES
 from people.models import Student, Teacher
 
 
@@ -43,7 +43,6 @@ class RatingItemStatus(models.Model):
 
 
 class GroupStudent(models.Model):
-    """Группы студентов."""
     grade = models.OneToOneField(Grade, related_name='group', on_delete=models.CASCADE,
                                  verbose_name='Наименование класса')
     create_group = models.DateField('Дата создания группы учеников')
@@ -68,11 +67,11 @@ class Score(models.Model):
                                 limit_choices_to={'user_status': STUDENT}, verbose_name='Студент')
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='score_teacher', on_delete=models.SET_NULL,
                                 null=True, limit_choices_to={'user_status': TEACHER}, verbose_name='Учитель')
-    score = models.SmallIntegerField(choices=SCORE_CHOICES, verbose_name='Оценка')
+    score = models.SmallIntegerField(choices=SCORE_CHOICES, verbose_name='Оценка', null=True, blank=True  )
     score_status = models.ForeignKey(RatingItemStatus, on_delete=models.CASCADE, verbose_name='Статус оценки')
     created = models.DateField(verbose_name='Дата создания')
     updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
-    attend = models.BooleanField(verbose_name='Был(а)  на уроке', null=True)
+    attend = models.CharField(verbose_name='Был(а)  на уроке', choices=ATTEND_CHOICES,  null=True, blank=True, max_length=15 )
 
     def __str__(self):
         return str(self.score)

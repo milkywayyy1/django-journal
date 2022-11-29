@@ -2,14 +2,12 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, Sum, Avg
-from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
 from django_journal.permissions import TeacherPermissionsMixin, StudentPermissionsMixin
 from django_journal.settings import STUDENT, TEACHER
-from people.detection import FaceRecognition
 from people.forms import UserCreateForm, StudentForm, ContactForm, ContactFormSet, StudentFormSet, UserUpdateForm
 from people.models import Teacher, Student, Contact, User
 from journal.models import Lesson, Score
@@ -34,6 +32,7 @@ class TeacherDetailView(LoginRequiredMixin, TeacherPermissionsMixin, DetailView)
 
 
 class StudentDetailView(LoginRequiredMixin, TeacherPermissionsMixin, DetailView):
+    """Информация о конкретном ученике."""
     template_name = 'people/student_detail.html'
 
     def get_queryset(self):
@@ -49,50 +48,34 @@ class StudentLkDetailView(LoginRequiredMixin, StudentPermissionsMixin, ScoreJour
         return User.objects.select_related('student', 'contact').get(pk=self.request.user.pk)
 
     def get_context_data(self, **kwargs):
-        print(self.request.user, 12)
         context = super(StudentLkDetailView, self).get_context_data(**kwargs)
         date_period = self.create_date_period_list()
         lessons = Lesson.objects.filter(grade__group__students=self.request.user.student.id)
         scores = Score.objects.filter(student_id=self.request.user.pk,
                                       created__in=date_period).values('id', 'lesson_id', 'score', 'created', 'attend')
-        count_scores = scores.values('score').annotate(count_score=Count('score')).order_by('-score')
-        count_attend = scores.values('attend').annotate(count_attend=Count('attend')).order_by('-attend')
+        count_attend =scores.values('attend').annotate(count_attend=Count('attend')).order_by('-attend')
 
-        a, b = list(count_scores), list(count_attend)
-        data = a[:-1]
-        # data.append(b[1])
-        # count_attend = scores.values('attend').annotate(count_attend=Count('score')).order_by('-score')
+        count_scores = scores.values('score').annotate(count_score=Count('score')).order_by('-score')
         total_scores = count_scores.aggregate(sum_count=Sum('count_score'),
                                               sum_score=Avg('score'),
                                               sum_score_percent=Avg('score')*20)
 
-
-        print(data)
-        total_attend = count_attend.aggregate(sum_count=Sum('count_attend'),
-                                              sum_score=Avg('attend'),
-                                              sum_score_percent=Avg('attend')*20)
-        print(total_attend)
-
         student_rating = {5: 0, 4: 0, 3: 0, 2: 0}
-
-        count_scores=list(count_scores)
-        for item in count_scores[:-1]:
+        for item in count_scores:
+            print(item)
             student_rating[item['score']] = item['count_score']
-
-        student_rating['Отсутствовал(а)  дней'] = 0
-        # count_attend[1]['count_attend']
+        asd = count_attend.first()
+        print()
+        student_rating[None] = asd['count_attend']
         context['rating'] = student_rating
         context['total_scores'] = total_scores
-        # context['total_attend'] = total_attend
         context['date_period'] = date_period
         context['lessons'] = lessons
         context['scores_dict'] = self.create_scores_dict(date_period, scores, lessons, 'lesson_id')
-        print(context)
         return context
 
 
 class StudentCreateView(LoginRequiredMixin, TeacherPermissionsMixin, SuccessMessageMixin, CreateView):
-
     form_class = UserCreateForm
     template_name = 'people/student_create.html'
     success_url = reverse_lazy('student_add')
@@ -156,4 +139,3 @@ class StudentUpdateView(LoginRequiredMixin, TeacherPermissionsMixin, SuccessMess
 
     def get_success_url(self):
         return reverse_lazy('student_update', kwargs={'pk': self.kwargs['pk']})
-

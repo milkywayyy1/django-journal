@@ -2,7 +2,7 @@
     <div class="reviews-container">
         <h2>Статистика оценок</h2>
 
-        {% for score, count_score in rating.items %}
+        {% for score, count_score  in rating.items %}
             <div class="review">
                 <span class="icon-container">{{ score }} *<i class="fas fa-star"></i></span>
                 <div class="progress">
@@ -12,7 +12,6 @@
             </div>
         {% endfor %}
     </div>
-
     <div class="flex-wrapper reviews-container">
         <h2>Мой рейтинг</h2>
         <div class="single-chart">

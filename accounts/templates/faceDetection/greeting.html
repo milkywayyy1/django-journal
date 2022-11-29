@@ -19,7 +19,7 @@
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type="hidden" name="next" value="{% url 'group_student_list' %}" />
-                    <button><a href="{% url 'group_student_list' %}">Next</a>
+                    <button><a href="{% url 'group_student_list' %}">Далее</a>
                 </button>
 
                 </form>

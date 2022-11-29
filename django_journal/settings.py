@@ -124,7 +124,7 @@ STUDENT = 'student'
 USER_STATUS_CHOICES = [(TEACHER, 'Учитель'), (STUDENT, 'Студент'), (DIRECTOR, 'Директор')]
 SCORE_CHOICES = [(5, '5'), (4, '4'), (3, '3'), (2, '2')]
 GENDER_CHOICES = [('М', 'М'), ('Ж', 'Ж')]
-
+ATTEND_CHOICES=[('Нет', 'Нет'), ('Да','Да')]
 AUTH_USER_MODEL = 'people.User'
 
 STATIC_URL = '/static/'

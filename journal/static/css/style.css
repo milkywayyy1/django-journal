@@ -580,6 +580,10 @@ h1, h2, h3, h4 {
 
 .progress-done-color-4 {
     background: linear-gradient(to left, rgb(247, 122, 122), rgb(174, 34, 34));
+    box-shadow: 0 3px 3px -5px rgb(225, 68, 68), 0 2px 5px rgb(228, 127, 122);
+}
+.progress-done-color-5 {
+    background: linear-gradient(to left, rgb(247, 122, 122), rgb(174, 34, 34));
 	box-shadow: 0 3px 3px -5px rgb(225, 68, 68), 0 2px 5px rgb(228, 127, 122);
 }
 
